@@ -9,14 +9,6 @@ import { CheckIcon, HomeIcon  } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
 
 export default function Expense() {
-    // When adding/editing an expense
-    //     Full Name should be a dropdown of users from the users table
-    //     Category will be a dropdown with the following options: Food, Travel, Equipment
-    //     Description will be a standard input box
-    //     Cost will be a standard input box
-    //     All fields must be filled out before being able to save the expense
-    // Each expense should be displayed as a separate row in the table
-    // When editing/deleting an expense, data in the other 2 tables should be updated as well
     const [cost, setCost] = useState()
     const [description, setDescription] = useState('')
     const [fullName, setFullName] = useState('')
@@ -61,8 +53,10 @@ export default function Expense() {
 
     }
 
+    const disabledButton = (fullName === '' || description === '' || category === '' || !cost)
+
     return(
-        <div className="w-screen h-screen text-white bg-black items-start px-4 pt-12 relative">
+        <div className="w-screen h-full text-white bg-black items-start px-4 pt-12 relative">
             <button className='static' onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /><div className="text-white">Main Page</div></button>
             <form className="flex items-center justify-around" onSubmit={submitExpense}>
                 <CustomDropDown inputVal={fullName} setVal={setFullName} placeHolder='Select Name'>
@@ -135,7 +129,8 @@ export default function Expense() {
                 <CustomInput fieldName="Cost" fieldType="number" placeHolder="$10" setVal={setCost} inputVal={cost}/>
                 <button
                         type="submit"
-                        className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto self-end"
+                        className="inline-flex items-center justify-center rounded-md border border-transparent disabled:bg-gray-600 bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm disabled:hover:bg-gray-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto self-end"
+                        disabled={disabledButton}
                     >
                         Add Expense
                 </button>
@@ -143,7 +138,7 @@ export default function Expense() {
             <CustomTable tableHeaders={tableHeaders} headerStyle='text-center'>
             {
                 expenses.map(expense => (
-                    <tr key={expense.id}>
+                    <tr key={expense.id} className="bg-black w-screen">
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
