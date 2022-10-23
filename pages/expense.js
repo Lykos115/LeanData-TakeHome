@@ -63,7 +63,7 @@ export default function Expense() {
 
     return(
         <div className="w-screen h-screen text-white bg-black items-start px-4 pt-12 relative">
-            <button className='static' onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /></button>
+            <button className='static' onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /><div className="text-white">Main Page</div></button>
             <form className="flex items-center justify-around" onSubmit={submitExpense}>
                 <CustomDropDown inputVal={fullName} setVal={setFullName} placeHolder='Select Name'>
                     {people.map((item) => (

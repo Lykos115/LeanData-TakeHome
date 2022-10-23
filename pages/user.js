@@ -38,7 +38,7 @@ export default function User() {
     const disableButton = firstName === '' || lastName === ''
     return(
         <div className='bg-black w-screen h-full text-white items-start px-4 pt-12 relative overflow-x-hidden'>
-            <button className="static" onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /></button>
+            <button className='static' onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /><div className="text-white">Main Page</div></button>
             <form className="flex justify-around items-center p-4" onSubmit={submitForm}>
                 <CustomInput fieldName="First Name" fieldType="text" placeHolder="Will" setVal={setFirstName} inputVal={firstName}/>
                 <CustomInput fieldName="Last Name" fieldType="text" placeHolder="Smith" setVal={setLastName} inputVal={lastName}/>
