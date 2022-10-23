@@ -1,17 +1,22 @@
 import { PrismaClient } from "@prisma/client"
 
+
 export default function handler(req, res) {
     const prisma = new PrismaClient()
 
     const main = async () => {
-        const body = JSON.parse(req.body)
-        await prisma.users.create({
-            data: {
-                FirstName: body.FirstName,
-                LastName: body.LastName
+        const allUsers = await prisma.expenses.groupBy({
+            by: ['Category'],
+            _sum:{
+                Cost:true
             }
         })
-        res.status(200)
+        const customJson = JSON.stringify(
+            allUsers,
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+        )
+    
+        res.status(200).json(JSON.parse(customJson))
     }
 
     main()

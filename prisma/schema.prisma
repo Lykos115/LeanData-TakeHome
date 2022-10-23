@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id           BigInt @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  FirstName    String @db.Text
+  LastName     String @db.Text
+  TotalExpense Float? @db.Float
+}
+
+model Expenses {
+  id          BigInt  @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  FullName    String? @db.Text
+  Category    String? @db.Text
+  Description String? @db.Text
+  Cost        Float?
+  userID      Int?
+}

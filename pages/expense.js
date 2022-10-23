@@ -2,8 +2,11 @@ import CustomInput from "../components/customInput"
 import CustomDropDown from "../components/customDropDown"
 import CustomTable from "../components/customTable"
 
-import useSWR, { useSWRConfig } from "swr"
-import { useState, useEffect } from 'react'
+import useSWR from "swr"
+import { useState } from 'react'
+import { Listbox} from '@headlessui/react'
+import { CheckIcon, HomeIcon  } from '@heroicons/react/20/solid'
+import { useRouter } from 'next/router'
 
 export default function Expense() {
     // When adding/editing an expense
@@ -18,9 +21,12 @@ export default function Expense() {
     const [description, setDescription] = useState('')
     const [fullName, setFullName] = useState('')
     const [category, setCategory] = useState('')
-    const {mutate} = useSWRConfig()
 
     const fetcher = (...args) => fetch(...args).then(res => res.json())
+    const classNames = (...classes) => {
+        return classes.filter(Boolean).join(' ')
+    }
+    const router = useRouter()
 
     const categoryList = [
         {id: 1, category: "Food"},
@@ -28,34 +34,103 @@ export default function Expense() {
         {id: 3, category: "Equipment"},
     ]
 
-    // const expenses = [
-    //     {id:1, FullName: "Francisco Herrera", Category: "Food", Description: "Team lunch", Cost:40.00}
-    // ]
-
     const {data: people, error: peopleError} = useSWR('/api/user/all', fetcher)
-    const {data: expenses, error: expensesError} = useSWR('/api/expense/allExpenses', fetcher)
+    const {data: expenses, error: expensesError} = useSWR('/api/expense/allExpenses', fetcher, {refreshInterval: 1000})
+
     const tableHeaders = ["Full Name", "Category", "Description", "Cost"]
-    if(!people) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
-    // console.log(expenses)
+
+    if(!people || !expenses) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
+
     const submitExpense = (e) => {
         e.preventDefault()
-        const name = fullName.FirstName + ' ' + fullName.LastName
+
+        const name = fullName?.FirstName + ' ' + fullName?.LastName
         const expenseCategory = category.category
-        const postData = JSON.stringify({FullName: name, Category:expenseCategory, Description: description, Cost: cost})
-        const response = fetcher('/api/expense/allExpenses', {method: 'POST', body:postData}).then(res => console.log(res))
-    
-        mutate('/api/expense/allEpenses')
+
+        const postData = JSON.stringify({FullName: name, Category:expenseCategory, Description: description, Cost: cost, userID: fullName.id})
+        const updateData = JSON.stringify({Cost: Number(cost) + Number(fullName.TotalExpense), userID: fullName.id})
+
+        fetcher('/api/expense/addExpense', {method: 'POST', body:postData})
+        fetcher('/api/user/updateUser', {method:'PUT', body: updateData} )
+
+
         setCost(0)
         setFullName('')
         setCategory('')
         setDescription('')
 
     }
+
     return(
-        <div className="w-screen h-screen text-white bg-black items-start p-4">
-            <form className="flex w-full justify-around" onSubmit={submitExpense}>
-                <CustomDropDown data={people} type="people" inputVal={fullName} setVal={setFullName}/>
-                <CustomDropDown data={categoryList} type="category" inputVal={category} setVal={setCategory}/>
+        <div className="w-screen h-screen text-white bg-black items-start px-4 pt-12 relative">
+            <button className='static' onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /></button>
+            <form className="flex items-center justify-around" onSubmit={submitExpense}>
+                <CustomDropDown inputVal={fullName} setVal={setFullName} placeHolder='Select Name'>
+                    {people.map((item) => (
+                        <Listbox.Option
+                        key={item.id}
+                        className={({ active }) =>
+                            classNames(
+                            active ? 'text-white bg-indigo-600' : 'text-gray-900',
+                            'relative cursor-default select-none py-2 pl-3 pr-9'
+                            )
+                        }
+                        value={item}
+                        >
+                        {({ fullName, active }) => (
+                            <>
+                            <span className={classNames(fullName ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                                {item.FirstName + ' ' + item.LastName}
+                            </span>
+
+                            {fullName ? (
+                                <span
+                                className={classNames(
+                                    active ? 'text-white' : 'text-indigo-600',
+                                    'absolute inset-y-0 right-0 flex items-center pr-4'
+                                )}
+                                >
+                                <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                </span>
+                            ) : null}
+                            </>
+                        )}
+                        </Listbox.Option>
+                    ))}
+                </CustomDropDown>
+                <CustomDropDown inputVal={category} setVal={setCategory} placeHolder='Select Category'>
+                    {categoryList.map((item) => (
+                        <Listbox.Option
+                        key={item.id}
+                        className={({ active }) =>
+                            classNames(
+                            active ? 'text-white bg-indigo-600' : 'text-gray-900',
+                            'relative cursor-default select-none py-2 pl-3 pr-9'
+                            )
+                        }
+                        value={item}
+                        >
+                        {({ category, active }) => (
+                            <>
+                            <span className={classNames(category ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                                {item.category}
+                            </span>
+
+                            {category ? (
+                                <span
+                                className={classNames(
+                                    active ? 'text-white' : 'text-indigo-600',
+                                    'absolute inset-y-0 right-0 flex items-center pr-4'
+                                )}
+                                >
+                                <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                </span>
+                            ) : null}
+                            </>
+                        )}
+                        </Listbox.Option>
+                    ))}
+                </CustomDropDown>
                 <CustomInput fieldName="Description" fieldType="text" placeHolder="Description" setVal={setDescription} inputVal={description}/>
                 <CustomInput fieldName="Cost" fieldType="number" placeHolder="$10" setVal={setCost} inputVal={cost}/>
                 <button
@@ -65,7 +140,7 @@ export default function Expense() {
                         Add Expense
                 </button>
             </form>
-            <CustomTable tableHeaders={tableHeaders} headerStyle='text-left'>
+            <CustomTable tableHeaders={tableHeaders} headerStyle='text-center'>
             {
                 expenses.map(expense => (
                     <tr key={expense.id}>
@@ -74,9 +149,21 @@ export default function Expense() {
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">${expense.Cost}</td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6 md:pr-0">
-                            <a href="#" className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+                            <a href={`/expense/${expense.id}`} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
                                 Edit
                             </a>
+                            <button 
+                                className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    const totalExpense = people.filter(person => Number(person.id) === expense.userID)[0].TotalExpense
+                                    const newCost = totalExpense - parseFloat(expense.Cost)
+                                    fetcher('/api/user/updateUser', {method:'PUT', body:JSON.stringify({Cost: newCost, userID: expense.userID})})
+                                    fetcher(`/api/expense/${expense.id}`, {method:'DELETE'})
+                                }}
+                            >
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 ))

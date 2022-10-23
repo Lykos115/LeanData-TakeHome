@@ -5,10 +5,13 @@ export default function handler(req, res) {
 
     const main = async () => {
         const body = JSON.parse(req.body)
-        await prisma.users.create({
+        await prisma.expenses.create({
             data: {
-                FirstName: body.FirstName,
-                LastName: body.LastName
+                FullName: body.FullName,
+                Category: body.Category,
+                Description: body.Description,
+                Cost: Number(body.Cost),
+                userID: Number(body.userID)
             }
         })
         res.status(200)
@@ -25,4 +28,6 @@ export default function handler(req, res) {
         })
 
 }
+
+
 

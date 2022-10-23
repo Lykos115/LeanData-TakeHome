@@ -5,10 +5,12 @@ export default function handler(req, res) {
 
     const main = async () => {
         const body = JSON.parse(req.body)
-        await prisma.users.create({
+        await prisma.users.update({
+            where: {
+                id: BigInt(body.userID)
+            },
             data: {
-                FirstName: body.FirstName,
-                LastName: body.LastName
+                TotalExpense: Number(body.Cost)
             }
         })
         res.status(200)
