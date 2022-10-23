@@ -25,6 +25,8 @@ export default function handler(req, res) {
                     id: BigInt(userID)
                 }
             })
+
+            //
             const req2 = prisma.expenses.deleteMany({
                 where:{
                     userID: Number(userID)
