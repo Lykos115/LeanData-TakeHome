@@ -1,8 +1,10 @@
-import { PrismaClient } from "@prisma/client"
+// import { PrismaClient } from "@prisma/client"
+
+import { prisma } from '../../../db'
 
 
 export default function handler(req, res) {
-    const prisma = new PrismaClient()
+    // const prisma = new PrismaClient()
     const {expenseID} = req.query
     const {method} = req
     const main = async () => {
@@ -18,6 +20,8 @@ export default function handler(req, res) {
                     Cost: parseFloat(body.Cost)
                 }
             })
+
+            //old cost & new cost
             res.status(200)
 
         }else if(method === 'DELETE'){

@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client"
+// import { PrismaClient } from "@prisma/client"
 
+import { prisma } from '../../db'
 
 export default function handler(req, res) {
-    const prisma = new PrismaClient()
+    // const prisma = new PrismaClient()
 
     const main = async () => {
         const allUsers = await prisma.expenses.groupBy({

@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client"
+// import { PrismaClient } from "@prisma/client"
+import {prisma} from '../../../db'
 
 
 export default function handler(req, res) {
-    const prisma = new PrismaClient()
+    // const prisma = new PrismaClient()
     const {userID} = req.query
     const {method} = req
     const main = async () => {
@@ -15,6 +16,14 @@ export default function handler(req, res) {
                 data: {
                     FirstName: body.FirstName,
                     LastName: body.LastName
+                }
+            })
+            await prisma.expenses.updateMany({
+                where: {
+                    userID: Number(userID)
+                },
+                data: {
+                    FullName: body.FirstName + ' ' + body.LastName
                 }
             })
             res.status(200)
@@ -32,7 +41,7 @@ export default function handler(req, res) {
                     userID: Number(userID)
                 }
             })
-            Promise.all([req1, req2])
+            await Promise.all([req1, req2])
             res.status(200)
         }else{
             const getUser = await prisma.users.findUnique({

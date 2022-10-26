@@ -17,8 +17,6 @@ export default function User() {
 // When editing/deleting a user, data in the other 2 tables should be updated as well
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
-    const [cursor, setCursor] = useState(1)
-    const {mutate} = useSWRConfig()
     const router = useRouter()
 
     const fetcher = (...args) => fetch(...args).then(res => res.json())

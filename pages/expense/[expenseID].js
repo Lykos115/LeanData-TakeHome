@@ -40,10 +40,11 @@ export default function UpdateUser() {
     const submitForm = (e) => {
         e.preventDefault()
         fetcher(expenseID ? `/api/expense/${expenseID}` : null, {method:'PUT', body:JSON.stringify({Category:category, Description:description, Cost: cost})})
-        const newAmount = Number(userExpense.TotalExpense) - Number(data.Cost) + cost
-        const updateData = JSON.stringify({Cost: newAmount, userID: data.userID})
-        fetcher('/api/user/updateUser', {method:'PUT', body: updateData} )
+        const newAmount = Number(userExpense.TotalExpense) - Number(data.Cost) + cost //We can send this to our /api/expense/[expenseID]
+        const updateData = JSON.stringify({Cost: newAmount, userID: data.userID})//get rid of this
+        fetcher('/api/user/updateUser', {method:'PUT', body: updateData} )//    and this
 
+        // router.pop()
         router.push('/expense')
     }
 
