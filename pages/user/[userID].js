@@ -1,9 +1,11 @@
 import CustomInput from "../../components/customInput"
+import CustomTable from "../../components/customTable"
 
 import useSWR from "swr"
 import { useState, useEffect } from 'react'
 import { HomeIcon  } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
+
 
 
 export default function UpdateUser() {
@@ -16,13 +18,14 @@ export default function UpdateUser() {
 
     const fetcher = (...args) => fetch(...args).then(res => res.json())
     const {data, error} = useSWR(userID ? `/api/user/${userID}` : null, fetcher)
+    const {data: userExpenses, error: userExpensesError} = useSWR(userID ? `/api/user/${userID}/expenses` : null, fetcher)
     
     useEffect(() => {
         setFirstName(data?.FirstName)
         setLastName(data?.LastName)
     }, [data])
 
-    if(!data) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
+    if(!data || !userExpenses) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
 
 
     const submitForm = (e) => {
@@ -30,7 +33,7 @@ export default function UpdateUser() {
         fetcher(userID ? `/api/user/${userID}` : null, {method:'PUT', body:JSON.stringify({FirstName:firstName, LastName:lastName})})
         router.push('/user')
     }
-
+    console.log(userExpenses)
     const disableButton = firstName === '' || lastName === ''
     return(
         <div className='bg-black w-screen h-screen text-white items-start px-4 pt-12 relative'>
@@ -46,6 +49,14 @@ export default function UpdateUser() {
                     Update user
                 </button>
             </form>
+
+            <CustomTable tableHeaders={['expense', 'description', 'cost']}>
+
+            </CustomTable>
+            
+            <div className="text-white">
+                
+            </div>
         </div>
     )
 }

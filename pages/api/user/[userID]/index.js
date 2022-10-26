@@ -1,5 +1,5 @@
 // import { PrismaClient } from "@prisma/client"
-import {prisma} from '../../../db'
+import {prisma} from '../../../../db'
 
 
 export default function handler(req, res) {
