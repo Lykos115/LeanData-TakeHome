@@ -2,7 +2,7 @@ import { Fragment } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
 
-const customDropDown = ({placeHolder, inputVal, setVal, children}) => {
+const customDropDown = ({placeHolder, inputVal, setVal, children, customStyle = 'text-left w-full'}) => {
     const displayText = inputVal.category ? inputVal.category : inputVal.FirstName + ' ' + inputVal.LastName
 
     return (
@@ -11,7 +11,7 @@ const customDropDown = ({placeHolder, inputVal, setVal, children}) => {
             <div>
                 <Listbox.Label className="block text-sm font-medium text-white">{placeHolder}</Listbox.Label>
                 <div className="relative mt-1">
-                <Listbox.Button className="relative w-full cursor-default rounded-md border border-white bg-black py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
+                <Listbox.Button className={`${customStyle} relative cursor-default rounded-md border border-white bg-black py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm`}>
                     <span className="block truncate">{inputVal === "" ? placeHolder : displayText}</span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                     <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />

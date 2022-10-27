@@ -1,10 +1,11 @@
-import CustomInput from "../components/customInput"
-import CustomTable from "../components/customTable"
+import CustomInput from "../../components/customInput"
+import CustomTable from "../../components/customTable"
 
 import { useState } from 'react'
 import useSWR, { useSWRConfig } from "swr"
 import { HomeIcon  } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
+import Link from "next/link"
 
 
 export default function User() {
@@ -17,6 +18,7 @@ export default function User() {
 // When editing/deleting a user, data in the other 2 tables should be updated as well
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
+    const [sortVal, setSortVal] = useState(null)
     const router = useRouter()
 
     const fetcher = (...args) => fetch(...args).then(res => res.json())
@@ -31,9 +33,25 @@ export default function User() {
         setFirstName('')
         setLastName('')
     }
+    const costButton = <button onClick={() => setSortVal(currentVal => {
+        if(currentVal === null) return true
+        if(currentVal === true) return false
+        return null
+    })}>Total Expense</button>
 
-    const tableHeaders = ["First Name", "Last Name", "Total Expense"]
+    const finalExpense = sortVal ? [...data].sort((expenseOne, expenseTwo) => {
+        if(expenseOne.TotalExpense > expenseTwo.TotalExpense) return -1
+        if(expenseOne.TotalExpense < expenseTwo.TotalExpense) return 1
+        return 0
+    }) : [...data].sort((expenseOne, expenseTwo) => {
+        if(expenseOne.TotalExpense > expenseTwo.TotalExpense) return 1
+        if(expenseOne.TotalExpense < expenseTwo.TotalExpense) return -1
+        return 0
+        
+    })
+    const tableHeaders = ["First Name", "Last Name", costButton]
     const disableButton = firstName === '' || lastName === ''
+    
     return(
         <div className='bg-black w-screen h-full text-white items-start px-4 pt-12 relative overflow-x-hidden'>
             <button className='static' onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /><div className="text-white">Main Page</div></button>
@@ -49,8 +67,28 @@ export default function User() {
                 </button>
             </form>
             <CustomTable tableHeaders={tableHeaders} headerStyle='text-center'>
-                {
+                {sortVal === null ?
                     data.map(user => (
+                        <tr key={user.id}>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0"><Link href={`/user/${user.id}`}>{user.FirstName}</Link></td>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{user.LastName}</td>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">${user.TotalExpense}</td>
+                            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6 md:pr-0 w-1/4">
+                                <a href={`/user/${user.id}/edit`} className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+                                    Edit
+                                </a>
+                                <button 
+                                    className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        fetcher(`/api/user/${user.id}`, {method:'DELETE'})
+                                    }}
+                                >
+                                    Delete</button>
+                            </td>
+                        </tr>
+                    )) : 
+                    finalExpense.map(user => (
                         <tr key={user.id}>
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{user.FirstName}</td>
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{user.LastName}</td>

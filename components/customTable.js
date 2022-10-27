@@ -17,7 +17,7 @@ const customTable = ({children, tableHeaders, headerStyle}) => {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 h-36">
                 {children}
               </tbody>
             </table>

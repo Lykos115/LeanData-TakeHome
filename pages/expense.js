@@ -13,6 +13,8 @@ export default function Expense() {
     const [description, setDescription] = useState('')
     const [fullName, setFullName] = useState('')
     const [category, setCategory] = useState('')
+    const [sortVal, setSortVal] = useState(null)
+    const [filterVal, setFilterVal] = useState({id:0, category:"All"})
 
     const fetcher = (...args) => fetch(...args).then(res => res.json())
     const classNames = (...classes) => {
@@ -29,9 +31,83 @@ export default function Expense() {
     const {data: people, error: peopleError} = useSWR('/api/user/all', fetcher)
     const {data: expenses, error: expensesError} = useSWR('/api/expense/allExpenses', fetcher, {refreshInterval: 1000})
 
-    const tableHeaders = ["Full Name", "Category", "Description", "Cost"]
+    const costButton = <button onClick={() => setSortVal((val => {
+        if(val === null) return true
+        if(val === true) return false
+        return null
+    }))}>Cost</button>
+    const categoryDropDown = (<CustomDropDown inputVal={filterVal} setVal={setFilterVal} placeHolder='Select Category' customStyle="w-1/3 text-center">
+                {[{id: 0, category: "All"},...categoryList].map((item) => (
+                    <Listbox.Option
+                    key={item.id}
+                    className={({ active }) =>
+                        classNames(
+                        active ? 'text-white bg-indigo-600' : 'text-gray-900',
+                        'relative cursor-default select-none py-2 pl-3 pr-9'
+                        )
+                    }
+                    value={item}
+                    >
+                    {({ category, active }) => (
+                        <>
+                        <span className={classNames(category ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                            {item.category}
+                        </span>
+
+                        {category ? (
+                            <span
+                            className={classNames(
+                                active ? 'text-white' : 'text-indigo-600',
+                                'absolute inset-y-0 right-0 flex items-center pr-4'
+                            )}
+                            >
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                            </span>
+                        ) : null}
+                        </>
+                    )}
+                    </Listbox.Option>
+                ))}
+            </CustomDropDown>) 
+    const tableHeaders = ["Full Name", categoryDropDown, "Description", costButton]
 
     if(!people || !expenses) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
+
+    const expenseArr = filterVal.category === 'All' ? expenses : [...expenses].filter(expense => expense.Category === filterVal.category)
+    const finalExpense = sortVal ? [...expenseArr].sort((expenseOne, expenseTwo) => {
+        if(expenseOne.Cost > expenseTwo.Cost) return 1
+        if(expenseOne.Cost < expenseTwo.Cost) return -1
+        return 0
+    }) : [...expenseArr].sort((expenseOne, expenseTwo) => {
+        if(expenseOne.Cost > expenseTwo.Cost) return -1
+        if(expenseOne.Cost < expenseTwo.Cost) return 1
+        return 0
+    })
+    const original = expenseArr.map(expense => (
+        <tr key={expense.id} className="bg-black w-screen">
+            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td>
+            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
+            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
+            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">${expense.Cost}</td>
+            <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6 md:pr-0">
+                <a href={`/expense/${expense.id}`} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+                    Edit
+                </a>
+                <button 
+                    className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                    onClick={(e) => {
+                        e.preventDefault()
+                        const totalExpense = people.filter(person => Number(person.id) === expense.userID)[0].TotalExpense
+                        const newCost = totalExpense - parseFloat(expense.Cost)
+                        fetcher('/api/user/updateUser', {method:'PUT', body:JSON.stringify({Cost: newCost, userID: expense.userID})})
+                        fetcher(`/api/expense/${expense.id}`, {method:'DELETE'})
+                    }}
+                >
+                    Delete
+                </button>
+            </td>
+        </tr>
+    ))
 
     const submitExpense = (e) => {
         e.preventDefault()
@@ -136,8 +212,8 @@ export default function Expense() {
                 </button>
             </form>
             <CustomTable tableHeaders={tableHeaders} headerStyle='text-center'>
-            {
-                expenses.map(expense => (
+            {sortVal === null ? original :
+                finalExpense.map(expense => (
                     <tr key={expense.id} className="bg-black w-screen">
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
