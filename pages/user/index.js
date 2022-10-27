@@ -1,5 +1,5 @@
-import CustomInput from "../components/customInput"
-import CustomTable from "../components/customTable"
+import CustomInput from "../../components/customInput"
+import CustomTable from "../../components/customTable"
 
 import { useState } from 'react'
 import useSWR, { useSWRConfig } from "swr"
