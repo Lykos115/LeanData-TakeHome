@@ -40,10 +40,10 @@ export default function Expense() {
         const expenseCategory = category.category
 
         const postData = JSON.stringify({FullName: name, Category:expenseCategory, Description: description, Cost: cost, userID: fullName.id})
-        const updateData = JSON.stringify({Cost: Number(cost) + Number(fullName.TotalExpense), userID: fullName.id})
+        const updateUserExpenseData = JSON.stringify({Cost: Number(cost) + Number(fullName.TotalExpense), userID: fullName.id})
 
         fetcher('/api/expense/addExpense', {method: 'POST', body:postData})
-        fetcher('/api/user/updateUser', {method:'PUT', body: updateData} )
+        fetcher('/api/user/updateUser', {method:'PUT', body: updateUserExpenseData} )
 
 
         setCost(0)
@@ -56,7 +56,7 @@ export default function Expense() {
     const disabledButton = (fullName === '' || description === '' || category === '' || !cost)
 
     return(
-        <div className="w-screen h-full text-white bg-black items-start px-4 pt-12 relative">
+        <div className="w-screen h-screen text-white bg-black items-start px-4 pt-12 relative overflow-x-hidden">
             <button className='static' onClick={() => router.push('/')}><HomeIcon className='h-10 w-10' /><div className="text-white">Main Page</div></button>
             <form className="flex items-center justify-around" onSubmit={submitExpense}>
                 <CustomDropDown inputVal={fullName} setVal={setFullName} placeHolder='Select Name'>
@@ -139,10 +139,10 @@ export default function Expense() {
             {
                 expenses.map(expense => (
                     <tr key={expense.id} className="bg-black w-screen">
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">${expense.Cost}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">${expense.Cost}</td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6 md:pr-0">
                             <a href={`/expense/${expense.id}`} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
                                 Edit
