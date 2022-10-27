@@ -1,5 +1,7 @@
 import CustomInput from "../../components/customInput"
 import CustomTable from "../../components/customTable"
+import CustomDropDown from "../../components/customDropDown"
+import { Listbox} from '@headlessui/react'
 
 import useSWR from "swr"
 import { useState, useEffect } from 'react'
@@ -13,7 +15,52 @@ export default function UpdateUser() {
     const {userID} = router.query
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
+    // 
 
+    const categoryList = [
+        {id: 1, category: "Food"},
+        {id: 2, category: "Travel"},
+        {id: 3, category: "Equipment"},
+    ]
+    const classNames = (...classes) => {
+        return classes.filter(Boolean).join(' ')
+    }
+    const [category, setCategory] = useState('')
+    const dropDown = <CustomDropDown inputVal={''} setVal={setCategory} placeHolder='Select Category'>
+                {categoryList.map((item) => (
+                    <Listbox.Option
+                    key={item.id}
+                    className={({ active }) =>
+                        classNames(
+                        active ? 'text-white bg-indigo-600' : 'text-gray-900',
+                        'relative cursor-default select-none py-2 pl-3 pr-9'
+                        )
+                    }
+                    value={item}
+                    >
+                    {({ category, active }) => (
+                        <>
+                        <span className={classNames(category ? 'font-semibold' : 'font-normal', 'block truncate')}>
+                            {item.category}
+                        </span>
+
+                        {category ? (
+                            <span
+                            className={classNames(
+                                active ? 'text-white' : 'text-indigo-600',
+                                'absolute inset-y-0 right-0 flex items-center pr-4'
+                            )}
+                            >
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                            </span>
+                        ) : null}
+                        </>
+                    )}
+                    </Listbox.Option>
+                ))}
+            </CustomDropDown>
+        console.log(category)
+    // 
     
 
     const fetcher = (...args) => fetch(...args).then(res => res.json())
@@ -34,6 +81,7 @@ export default function UpdateUser() {
         router.push('/user')
     }
     console.log(userExpenses)
+    // const filteredExpenses = category === '' ? userExpenses : userExpenses.filter(expense => expense.Category === category.category)
     const disableButton = firstName === '' || lastName === ''
     return(
         <div className='bg-black w-screen h-screen text-white items-start px-4 pt-12 relative'>
@@ -49,9 +97,60 @@ export default function UpdateUser() {
                     Update user
                 </button>
             </form>
+        {/* new things below */}
 
-            <CustomTable tableHeaders={['expense', 'description', 'cost']}>
-
+            <CustomTable tableHeaders={[dropDown, 'description', 'cost']}>
+                {category === '' ? userExpenses.map(expense => (
+                    <tr key={expense.id} className="bg-black w-screen">
+                        {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td> */}
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">${expense.Cost}</td>
+                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6 md:pr-0">
+                            <a href={`/expense/${expense.id}`} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+                                Edit
+                            </a>
+                            <button 
+                                className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    // const totalExpense = people.filter(person => Number(person.id) === expense.userID)[0].TotalExpense
+                                    const totalExpense = data.TotalExpense
+                                    const newCost = totalExpense - parseFloat(expense.Cost)
+                                    fetcher('/api/user/updateUser', {method:'PUT', body:JSON.stringify({Cost: newCost, userID: expense.userID})})
+                                    fetcher(`/api/expense/${expense.id}`, {method:'DELETE'})
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                )) : filteredExpenses.map(expense => (
+                    <tr key={expense.id} className="bg-black w-screen">
+                        {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td> */}
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
+                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">${expense.Cost}</td>
+                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6 md:pr-0">
+                            <a href={`/expense/${expense.id}`} className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+                                Edit
+                            </a>
+                            <button 
+                                className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    // const totalExpense = people.filter(person => Number(person.id) === expense.userID)[0].TotalExpense
+                                    const totalExpense = data.TotalExpense
+                                    const newCost = totalExpense - parseFloat(expense.Cost)
+                                    fetcher('/api/user/updateUser', {method:'PUT', body:JSON.stringify({Cost: newCost, userID: expense.userID})})
+                                    fetcher(`/api/expense/${expense.id}`, {method:'DELETE'})
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                ))}
             </CustomTable>
             
             <div className="text-white">

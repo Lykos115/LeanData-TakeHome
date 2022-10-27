@@ -53,6 +53,7 @@ export default function UpdateUser() {
         <div className='bg-black w-screen h-screen text-white items-start px-4 pt-12 relative'>
             <button className="static" onClick={() => router.push('/expense')}><HomeIcon className='h-10 w-10' /></button>
             <form className="flex justify-around items-center p-4" onSubmit={submitForm}>
+                <h1>{data.FullName}</h1>
                 <CustomDropDown inputVal={category} setVal={setCategory} placeHolder='Select Category'>
                     {categoryList.map((item) => (
                         <Listbox.Option
