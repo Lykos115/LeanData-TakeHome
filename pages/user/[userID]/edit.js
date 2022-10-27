@@ -17,56 +17,56 @@ export default function UpdateUser() {
     const [lastName, setLastName] = useState('')
     // 
 
-    const categoryList = [
-        {id: 0, category: "All"},
-        {id: 1, category: "Food"},
-        {id: 2, category: "Travel"},
-        {id: 3, category: "Equipment"},
-    ]
-    const classNames = (...classes) => {
-        return classes.filter(Boolean).join(' ')
-    }
-    const [category, setCategory] = useState(categoryList[0])
-    const [sortVal, setSortVal] = useState(null)
-    const dropDown = <CustomDropDown inputVal={category} setVal={setCategory} placeHolder='Select Category' customStyle="w-1/3 text-center">
-                {categoryList.map((item) => (
-                    <Listbox.Option
-                    key={item.id}
-                    className={({ active }) =>
-                        classNames(
-                        active ? 'text-white bg-indigo-600' : 'text-gray-900',
-                        'relative cursor-default select-none py-2 pl-3 pr-9'
-                        )
-                    }
-                    value={item}
-                    >
-                    {({ category, active }) => (
-                        <>
-                        <span className={classNames(category ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                            {item.category}
-                        </span>
+    // const categoryList = [
+    //     {id: 0, category: "All"},
+    //     {id: 1, category: "Food"},
+    //     {id: 2, category: "Travel"},
+    //     {id: 3, category: "Equipment"},
+    // ]
+    // const classNames = (...classes) => {
+    //     return classes.filter(Boolean).join(' ')
+    // }
+    // const [category, setCategory] = useState(categoryList[0])
+    // const [sortVal, setSortVal] = useState(null)
+    // const dropDown = <CustomDropDown inputVal={category} setVal={setCategory} placeHolder='Select Category' customStyle="w-1/3 text-center">
+    //             {categoryList.map((item) => (
+    //                 <Listbox.Option
+    //                 key={item.id}
+    //                 className={({ active }) =>
+    //                     classNames(
+    //                     active ? 'text-white bg-indigo-600' : 'text-gray-900',
+    //                     'relative cursor-default select-none py-2 pl-3 pr-9'
+    //                     )
+    //                 }
+    //                 value={item}
+    //                 >
+    //                 {({ category, active }) => (
+    //                     <>
+    //                     <span className={classNames(category ? 'font-semibold' : 'font-normal', 'block truncate')}>
+    //                         {item.category}
+    //                     </span>
 
-                        {category ? (
-                            <span
-                            className={classNames(
-                                active ? 'text-white' : 'text-indigo-600',
-                                'absolute inset-y-0 right-0 flex items-center pr-4'
-                            )}
-                            >
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                            </span>
-                        ) : null}
-                        </>
-                    )}
-                    </Listbox.Option>
-                ))}
-            </CustomDropDown>
-    const costButton = <button onClick={() => setSortVal(currentVal => {
-        if(currentVal === null) return true
-        if(currentVal === true) return false
-        return null
-    })}>Cost</button>
-        console.log(category)
+    //                     {category ? (
+    //                         <span
+    //                         className={classNames(
+    //                             active ? 'text-white' : 'text-indigo-600',
+    //                             'absolute inset-y-0 right-0 flex items-center pr-4'
+    //                         )}
+    //                         >
+    //                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
+    //                         </span>
+    //                     ) : null}
+    //                     </>
+    //                 )}
+    //                 </Listbox.Option>
+    //             ))}
+    //         </CustomDropDown>
+    // const costButton = <button onClick={() => setSortVal(currentVal => {
+    //     if(currentVal === null) return true
+    //     if(currentVal === true) return false
+    //     return null
+    // })}>Cost</button>
+    //     console.log(category)
     // 
     
 
@@ -87,19 +87,19 @@ export default function UpdateUser() {
         fetcher(userID ? `/api/user/${userID}` : null, {method:'PUT', body:JSON.stringify({FirstName:firstName, LastName:lastName})})
         router.push('/user')
     }
-    console.log(sortVal)
-    const filteredExpenses = category.category === 'All' ? userExpenses : [...userExpenses].filter(expense => expense.Category === category.category)
-    const finalExpense = sortVal ? [...filteredExpenses].sort((expenseOne, expenseTwo) => {
-        if(expenseOne.Cost > expenseTwo.Cost) return -1
-        if(expenseOne.Cost < expenseTwo.Cost) return 1
-        return 0
-    }) : [...filteredExpenses].sort((expenseOne, expenseTwo) => {
-        if(expenseOne.Cost > expenseTwo.Cost) return 1
-        if(expenseOne.Cost < expenseTwo.Cost) return -1
-        return 0
+    // console.log(sortVal)
+    // const filteredExpenses = category.category === 'All' ? userExpenses : [...userExpenses].filter(expense => expense.Category === category.category)
+    // const finalExpense = sortVal ? [...filteredExpenses].sort((expenseOne, expenseTwo) => {
+    //     if(expenseOne.Cost > expenseTwo.Cost) return -1
+    //     if(expenseOne.Cost < expenseTwo.Cost) return 1
+    //     return 0
+    // }) : [...filteredExpenses].sort((expenseOne, expenseTwo) => {
+    //     if(expenseOne.Cost > expenseTwo.Cost) return 1
+    //     if(expenseOne.Cost < expenseTwo.Cost) return -1
+    //     return 0
         
-    })
-    console.log(finalExpense)
+    // })
+    // console.log(finalExpense)
     const disableButton = firstName === '' || lastName === ''
     return(
         <div className='bg-black w-screen h-screen text-white items-start px-4 pt-12 relative'>

@@ -13,8 +13,8 @@ import { useRouter } from 'next/router'
 export default function UpdateUser() {
     const router = useRouter()
     const {userID} = router.query
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
+    // const [firstName, setFirstName] = useState('')
+    // const [lastName, setLastName] = useState('')
     // 
 
     const categoryList = [
@@ -74,33 +74,37 @@ export default function UpdateUser() {
     const {data, error} = useSWR(userID ? `/api/user/${userID}` : null, fetcher)
     const {data: userExpenses, error: userExpensesError} = useSWR(userID ? `/api/user/${userID}/expenses` : null, fetcher)
     
-    useEffect(() => {
-        setFirstName(data?.FirstName)
-        setLastName(data?.LastName)
-    }, [data])
+    // useEffect(() => {
+    //     setFirstName(data?.FirstName)
+    //     setLastName(data?.LastName)
+    // }, [data])
 
     if(!data || !userExpenses) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
 
 
-    const submitForm = (e) => {
-        e.preventDefault()
-        fetcher(userID ? `/api/user/${userID}` : null, {method:'PUT', body:JSON.stringify({FirstName:firstName, LastName:lastName})})
-        router.push('/user')
-    }
-    console.log(sortVal)
-    const filteredExpenses = category.category === 'All' ? userExpenses : [...userExpenses].filter(expense => expense.Category === category.category)
-    const finalExpense = sortVal ? [...filteredExpenses].sort((expenseOne, expenseTwo) => {
+    // const submitForm = (e) => {
+    //     e.preventDefault()
+    //     fetcher(userID ? `/api/user/${userID}` : null, {method:'PUT', body:JSON.stringify({FirstName:firstName, LastName:lastName})})
+    //     router.push('/user')
+    // }
+    // console.log(sortVal)
+
+    const filteredExpenses = [...userExpenses].filter(expense => expense.Category === category.category)
+    const expenseView = category.category === 'All' ? userExpenses : filteredExpenses
+    const sortExpenseArr = [...expenseView]
+
+    const finalExpense = sortVal ? sortExpenseArr.sort((expenseOne, expenseTwo) => {
         if(expenseOne.Cost > expenseTwo.Cost) return -1
         if(expenseOne.Cost < expenseTwo.Cost) return 1
         return 0
-    }) : [...filteredExpenses].sort((expenseOne, expenseTwo) => {
+    }) : sortExpenseArr.sort((expenseOne, expenseTwo) => {
         if(expenseOne.Cost > expenseTwo.Cost) return 1
         if(expenseOne.Cost < expenseTwo.Cost) return -1
         return 0
         
     })
-    console.log(finalExpense)
-    const disableButton = firstName === '' || lastName === ''
+    // console.log(finalExpense)
+    // const disableButton = firstName === '' || lastName === ''
     return(
         <div className='bg-black w-screen h-screen text-white items-start px-4 pt-12 relative'>
             <button className="static" onClick={() => router.push('/user')}><HomeIcon className='h-10 w-10' /></button>
@@ -112,7 +116,7 @@ export default function UpdateUser() {
             </div>
             <CustomTable tableHeaders={[dropDown, 'description', costButton]}>
                 {sortVal === null ? 
-                filteredExpenses.map(expense => (
+                expenseView.map(expense => (
                     <tr key={expense.id} className="bg-black w-screen">
                         {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td> */}
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>

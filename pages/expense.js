@@ -73,12 +73,13 @@ export default function Expense() {
 
     if(!people || !expenses) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
 
-    const expenseArr = filterVal.category === 'All' ? expenses : [...expenses].filter(expense => expense.Category === filterVal.category)
-    const finalExpense = sortVal ? [...expenseArr].sort((expenseOne, expenseTwo) => {
+    const filterArr = [...expenses].filter(expense => expense.Category === filterVal.category)
+    const expenseArr = filterVal.category === 'All' ? expenses : filterArr
+    const finalExpense = sortVal ? filterArr.sort((expenseOne, expenseTwo) => {
         if(expenseOne.Cost > expenseTwo.Cost) return 1
         if(expenseOne.Cost < expenseTwo.Cost) return -1
         return 0
-    }) : [...expenseArr].sort((expenseOne, expenseTwo) => {
+    }) : filterArr.sort((expenseOne, expenseTwo) => {
         if(expenseOne.Cost > expenseTwo.Cost) return -1
         if(expenseOne.Cost < expenseTwo.Cost) return 1
         return 0

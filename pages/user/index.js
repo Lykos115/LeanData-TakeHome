@@ -39,11 +39,13 @@ export default function User() {
         return null
     })}>Total Expense</button>
 
-    const finalExpense = sortVal ? [...data].sort((expenseOne, expenseTwo) => {
+    const filterArr = [...data]
+
+    const finalExpense = sortVal ?  filterArr.sort((expenseOne, expenseTwo) => {
         if(expenseOne.TotalExpense > expenseTwo.TotalExpense) return -1
         if(expenseOne.TotalExpense < expenseTwo.TotalExpense) return 1
         return 0
-    }) : [...data].sort((expenseOne, expenseTwo) => {
+    }) : filterArr.sort((expenseOne, expenseTwo) => {
         if(expenseOne.TotalExpense > expenseTwo.TotalExpense) return 1
         if(expenseOne.TotalExpense < expenseTwo.TotalExpense) return -1
         return 0
