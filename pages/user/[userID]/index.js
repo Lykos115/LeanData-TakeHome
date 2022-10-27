@@ -4,8 +4,8 @@ import CustomDropDown from "../../../components/customDropDown"
 import { Listbox} from '@headlessui/react'
 
 import useSWR from "swr"
-import { useState, useEffect } from 'react'
-import { HomeIcon  } from '@heroicons/react/20/solid'
+import { useState } from 'react'
+import { HomeIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/router'
 
 
@@ -13,9 +13,6 @@ import { useRouter } from 'next/router'
 export default function UpdateUser() {
     const router = useRouter()
     const {userID} = router.query
-    // const [firstName, setFirstName] = useState('')
-    // const [lastName, setLastName] = useState('')
-    // 
 
     const categoryList = [
         {id: 0, category: "All"},
@@ -66,28 +63,13 @@ export default function UpdateUser() {
         if(currentVal === true) return false
         return null
     })}>Cost</button>
-        console.log(category)
-    // 
     
 
     const fetcher = (...args) => fetch(...args).then(res => res.json())
     const {data, error} = useSWR(userID ? `/api/user/${userID}` : null, fetcher)
     const {data: userExpenses, error: userExpensesError} = useSWR(userID ? `/api/user/${userID}/expenses` : null, fetcher)
-    
-    // useEffect(() => {
-    //     setFirstName(data?.FirstName)
-    //     setLastName(data?.LastName)
-    // }, [data])
 
     if(!data || !userExpenses) return <div className='bg-black w-screen h-screen text-white flex justify-center items-center'>Loading....</div>
-
-
-    // const submitForm = (e) => {
-    //     e.preventDefault()
-    //     fetcher(userID ? `/api/user/${userID}` : null, {method:'PUT', body:JSON.stringify({FirstName:firstName, LastName:lastName})})
-    //     router.push('/user')
-    // }
-    // console.log(sortVal)
 
     const filteredExpenses = [...userExpenses].filter(expense => expense.Category === category.category)
     const expenseView = category.category === 'All' ? userExpenses : filteredExpenses
@@ -103,8 +85,7 @@ export default function UpdateUser() {
         return 0
         
     })
-    // console.log(finalExpense)
-    // const disableButton = firstName === '' || lastName === ''
+
     return(
         <div className='bg-black w-screen h-screen text-white items-start px-4 pt-12 relative'>
             <button className="static" onClick={() => router.push('/user')}><HomeIcon className='h-10 w-10' /></button>
@@ -118,7 +99,6 @@ export default function UpdateUser() {
                 {sortVal === null ? 
                 expenseView.map(expense => (
                     <tr key={expense.id} className="bg-black w-screen">
-                        {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-left font-medium text-white sm:pl-6 md:pl-0">{expense.FullName}</td> */}
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Category}</td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{expense.Description}</td>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">${expense.Cost}</td>
@@ -130,7 +110,6 @@ export default function UpdateUser() {
                                 className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                                 onClick={(e) => {
                                     e.preventDefault()
-                                    // const totalExpense = people.filter(person => Number(person.id) === expense.userID)[0].TotalExpense
                                     const totalExpense = data.TotalExpense
                                     const newCost = totalExpense - parseFloat(expense.Cost)
                                     fetcher('/api/user/updateUser', {method:'PUT', body:JSON.stringify({Cost: newCost, userID: expense.userID})})
@@ -157,7 +136,6 @@ export default function UpdateUser() {
                                 className="mx-4 inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
                                 onClick={(e) => {
                                     e.preventDefault()
-                                    // const totalExpense = people.filter(person => Number(person.id) === expense.userID)[0].TotalExpense
                                     const totalExpense = data.TotalExpense
                                     const newCost = totalExpense - parseFloat(expense.Cost)
                                     fetcher('/api/user/updateUser', {method:'PUT', body:JSON.stringify({Cost: newCost, userID: expense.userID})})

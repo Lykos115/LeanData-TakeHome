@@ -1,6 +1,6 @@
-import CustomInput from "../components/customInput"
-import CustomDropDown from "../components/customDropDown"
-import CustomTable from "../components/customTable"
+import CustomInput from "../../components/customInput"
+import CustomDropDown from "../../components/customDropDown"
+import CustomTable from "../../components/customTable"
 
 import useSWR from "swr"
 import { useState } from 'react'

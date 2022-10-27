@@ -1,9 +1,6 @@
-import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 export default function Home() {
-
-  const router = useRouter()
 
   return (
     <div className='bg-black w-screen h-screen text-white flex flex-col justify-center'>
