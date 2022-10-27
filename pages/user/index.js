@@ -34,10 +34,10 @@ export default function User() {
         setLastName('')
     }
     const costButton = <button onClick={() => setSortVal(currentVal => {
-        if(currentVal === null) return true
-        if(currentVal === true) return false
-        return null
-    })}>Total Expense</button>
+                            if(currentVal === null) return true
+                            if(currentVal === true) return false
+                            return null
+                        })}>Total Expense</button>
 
     const filterArr = [...data]
 
@@ -92,7 +92,7 @@ export default function User() {
                     )) : 
                     finalExpense.map(user => (
                         <tr key={user.id}>
-                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{user.FirstName}</td>
+                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0"><Link href={`/user/${user.id}`}>{user.FirstName}</Link></td>
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">{user.LastName}</td>
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-center font-medium text-white sm:pl-6 md:pl-0">${user.TotalExpense}</td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-medium sm:pr-6 md:pr-0 w-1/4">
