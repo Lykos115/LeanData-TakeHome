@@ -11,7 +11,7 @@ export default function handler(req, res) {
             const body = JSON.parse(req.body)
             await prisma.users.update({
                 where: {
-                    id: BigInt(userID)
+                    id: Number(userID)
                 },
                 data: {
                     FirstName: body.FirstName,
@@ -31,7 +31,7 @@ export default function handler(req, res) {
         }else if(method === 'DELETE'){
             const req1 = prisma.users.delete({
                 where:{
-                    id: BigInt(userID)
+                    id: Number(userID)
                 }
             })
 

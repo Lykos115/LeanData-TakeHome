@@ -21,7 +21,7 @@ export default function CompanyExpense() {
                     data.map((item, index) => (
                         <div key={index} className='flex flex-col justify-center items-center p-4'>
                             <h1 className='text-6xl font-bold p-16'>{item.Category}</h1>
-                            <div className='text-4xl font-semibold'>${item._sum.Cost.toFixed(2)}</div>
+                            <div className='text-4xl font-semibold'>${item._sum.Cost}</div>
                         </div>
                     ))
                 }               

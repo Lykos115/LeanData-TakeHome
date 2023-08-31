@@ -12,7 +12,7 @@ export default function handler(req, res) {
             const body = JSON.parse(req.body)
             await prisma.expenses.update({
                 where: {
-                    id: BigInt(expenseID)
+                    id: Number(expenseID)
                 },
                 data: {
                     Category: body.Category.category,
@@ -27,7 +27,7 @@ export default function handler(req, res) {
         }else if(method === 'DELETE'){
             await prisma.expenses.delete({
                 where:{
-                    id: BigInt(expenseID)
+                    id: Number(expenseID)
                 }
             })
             res.status(200)

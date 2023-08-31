@@ -7,7 +7,7 @@ export default function handler(req, res) {
         const body = JSON.parse(req.body)
         await prisma.users.update({
             where: {
-                id: BigInt(body.userID)
+                id: Number(body.userID)
             },
             data: {
                 TotalExpense: Number(body.Cost)
